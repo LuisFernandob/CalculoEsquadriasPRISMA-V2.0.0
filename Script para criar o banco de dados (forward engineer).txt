@@ -1,0 +1,167 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema prisma
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema prisma
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `prisma` DEFAULT CHARACTER SET latin1 ;
+USE `prisma` ;
+
+-- -----------------------------------------------------
+-- Table `prisma`.`cliente`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `prisma`.`cliente` (
+  `idcliente` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(45) NULL DEFAULT NULL,
+  `empresa` VARCHAR(45) NULL DEFAULT NULL,
+  `telefone` VARCHAR(45) NULL DEFAULT NULL,
+  `endereço` VARCHAR(45) NULL DEFAULT NULL,
+  `email` VARCHAR(45) NULL DEFAULT NULL,
+  `datanascimento` DATE NULL DEFAULT NULL,
+  `cnpj` VARCHAR(45) NULL DEFAULT NULL,
+  `cpf` VARCHAR(45) NULL DEFAULT NULL,
+  `observacoes` VARCHAR(120) NULL DEFAULT NULL,
+  PRIMARY KEY (`idcliente`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 52
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `prisma`.`componente`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `prisma`.`componente` (
+  `codigo_componente` VARCHAR(45) NOT NULL,
+  `tipo` VARCHAR(45) NULL DEFAULT NULL,
+  `descricao` VARCHAR(45) NULL DEFAULT NULL,
+  `comprimento_barra_m` DOUBLE NULL DEFAULT NULL,
+  `unidade` VARCHAR(45) NULL DEFAULT NULL,
+  `largura_mm` INT(11) NULL DEFAULT NULL,
+  `largura_encaixe_mm` INT(11) NULL DEFAULT NULL,
+  `peso_por_metro` DOUBLE NULL DEFAULT NULL,
+  PRIMARY KEY (`codigo_componente`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `prisma`.`orcamento`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `prisma`.`orcamento` (
+  `idorcamento` INT(11) NOT NULL AUTO_INCREMENT,
+  `idcliente` INT(11) NULL DEFAULT NULL,
+  `descricao` VARCHAR(45) NULL DEFAULT NULL,
+  `pesototal` DOUBLE NULL DEFAULT NULL,
+  `valortotal` DOUBLE NULL DEFAULT NULL,
+  `datahora` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idorcamento`),
+  INDEX `idcliente_idx` (`idcliente` ASC) VISIBLE,
+  CONSTRAINT `idcliente`
+    FOREIGN KEY (`idcliente`)
+    REFERENCES `prisma`.`cliente` (`idcliente`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 23
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `prisma`.`produto`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `prisma`.`produto` (
+  `idproduto` INT(11) NOT NULL AUTO_INCREMENT,
+  `tipo` VARCHAR(45) NULL DEFAULT NULL,
+  `descricao` VARCHAR(45) NULL DEFAULT NULL,
+  `folhas` VARCHAR(45) NULL DEFAULT NULL,
+  `observacoes` VARCHAR(120) NULL DEFAULT NULL,
+  PRIMARY KEY (`idproduto`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 20
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `prisma`.`itens_orcamento`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `prisma`.`itens_orcamento` (
+  `iditens_orcamento` INT(11) NOT NULL AUTO_INCREMENT,
+  `idorcamento` INT(11) NOT NULL,
+  `idproduto` INT(11) NOT NULL,
+  `arremate` VARCHAR(45) NULL DEFAULT NULL,
+  `contramarco` VARCHAR(45) NULL DEFAULT NULL,
+  `largura_mm` INT(11) NULL DEFAULT NULL,
+  `altura_mm` INT(11) NULL DEFAULT NULL,
+  `quantidade` INT(11) NULL DEFAULT NULL,
+  `pesototal` DOUBLE NULL DEFAULT NULL,
+  `valortotal` DOUBLE NULL DEFAULT NULL,
+  PRIMARY KEY (`iditens_orcamento`),
+  UNIQUE INDEX `iditens_orcamento_UNIQUE` (`iditens_orcamento` ASC) VISIBLE,
+  INDEX `idorcamento_idx` (`idorcamento` ASC) VISIBLE,
+  INDEX `idproduto_idx` (`idproduto` ASC) VISIBLE,
+  CONSTRAINT `idorcamento`
+    FOREIGN KEY (`idorcamento`)
+    REFERENCES `prisma`.`orcamento` (`idorcamento`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `idproduto`
+    FOREIGN KEY (`idproduto`)
+    REFERENCES `prisma`.`produto` (`idproduto`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 20
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `prisma`.`tipologia`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `prisma`.`tipologia` (
+  `idtipologia` INT(11) NOT NULL AUTO_INCREMENT,
+  `id_produto` INT(11) NOT NULL,
+  `codigo_componente` VARCHAR(45) NOT NULL,
+  `descricao_componente` VARCHAR(45) NULL DEFAULT NULL,
+  `multiplicadorlargura` DOUBLE NULL DEFAULT NULL,
+  `multiplicadoraltura` DOUBLE NULL DEFAULT NULL,
+  `peso_por_metro` DOUBLE NULL DEFAULT NULL,
+  PRIMARY KEY (`idtipologia`),
+  INDEX `codigo_componente_idx` (`codigo_componente` ASC) VISIBLE,
+  INDEX `idproduto_idx` (`id_produto` ASC) VISIBLE,
+  CONSTRAINT `codigo_componente`
+    FOREIGN KEY (`codigo_componente`)
+    REFERENCES `prisma`.`componente` (`codigo_componente`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `id_produto`
+    FOREIGN KEY (`id_produto`)
+    REFERENCES `prisma`.`produto` (`idproduto`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 35
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `prisma`.`variaveis`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `prisma`.`variaveis` (
+  `referencia` INT(1) NULL DEFAULT NULL,
+  `precoaluminio` DOUBLE NULL DEFAULT NULL,
+  `porcentagemmdo` INT(11) NULL DEFAULT NULL)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
